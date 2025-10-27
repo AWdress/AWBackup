@@ -7,6 +7,12 @@
 # 描述: 自动压缩备份文件夹到指定目录
 # ============================================
 
+# 先输出启动信息（在 set -e 之前）
+echo "========================================"
+echo "AWBackup 备份脚本启动"
+echo "时间: $(date '+%Y-%m-%d %H:%M:%S')"
+echo "========================================"
+
 set -e  # 遇到错误时退出
 set -u  # 使用未定义变量时报错
 
@@ -17,6 +23,9 @@ set -u  # 使用未定义变量时报错
 # 获取脚本所在目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_FILE="${CONFIG_FILE:-${SCRIPT_DIR}/config.conf}"
+
+echo "脚本目录: $SCRIPT_DIR"
+echo "配置文件: $CONFIG_FILE"
 
 # 颜色定义（用于终端输出）
 RED='\033[0;31m'
