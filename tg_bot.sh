@@ -116,12 +116,22 @@ handle_command() {
                     if [[ $result -eq 0 ]]; then
                         send_message "$chat_id" "✅ 备份任务执行完成！\n\n详细结果请查看通知消息。"
                     else
-                        # 获取最后 500 个字符的错误信息
-                        error_msg="${output: -500}"
-                        if [[ -z "$error_msg" ]]; then
-                            error_msg="未捕获到错误信息，请查看容器日志: docker logs AWBackup"
+                        # 获取错误信息
+                        if [[ -n "$output" ]]; then
+                            # 提取 ERROR 行
+                            error_lines=$(echo "$output" | grep -i "ERROR\|失败\|错误" | tail -10)
+                            
+                            if [[ -n "$error_lines" ]]; then
+                                error_msg="$error_lines"
+                            else
+                                # 如果没有ERROR行，显示最后几行
+                                error_msg=$(echo "$output" | tail -10)
+                            fi
+                        else
+                            error_msg="备份脚本未返回任何输出\n\n可能原因:\n1. 脚本启动失败\n2. 配置文件错误\n3. 目录权限问题\n\n请查看日志: docker logs AWBackup"
                         fi
-                        send_message "$chat_id" "❌ 备份任务执行失败！\n\n错误信息:\n\`\`\`\n${error_msg}\n\`\`\`"
+                        
+                        send_message "$chat_id" "❌ 备份任务执行失败！\n\n错误信息:\n\`\`\`\n${error_msg}\n\`\`\`\n\n完整日志请查看容器: docker logs AWBackup"
                     fi
                 else
                     send_message "$chat_id" "❌ 备份脚本不存在或无执行权限\n\n路径: $BACKUP_SCRIPT"

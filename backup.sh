@@ -339,6 +339,9 @@ backup_task() {
     # 验证必需配置
     if [[ -z "${source_dir}" ]] || [[ -z "${dest_dir}" ]]; then
         log ERROR "任务 [${task_name}] 配置不完整：缺少 SOURCE 或 DESTINATION"
+        echo "[ERROR] 任务 [${task_name}] 配置不完整：缺少 SOURCE 或 DESTINATION" >&2
+        echo "[ERROR] SOURCE=${source_dir}" >&2
+        echo "[ERROR] DESTINATION=${dest_dir}" >&2
         return 1
     fi
     
@@ -348,6 +351,7 @@ backup_task() {
     
     # 检查源目录
     if ! check_directory "${source_dir}" "源"; then
+        echo "[ERROR] 任务 [${task_name}] 源目录检查失败: ${source_dir}" >&2
         return 1
     fi
     
@@ -358,6 +362,7 @@ backup_task() {
     
     # 检查磁盘空间
     if ! check_disk_space "${source_dir}" "${dest_dir}" "${task_name}"; then
+        echo "[ERROR] 任务 [${task_name}] 磁盘空间不足" >&2
         return 1
     fi
     
