@@ -29,7 +29,7 @@ WORKDIR /app
 COPY backup.sh /app/
 COPY cleanup.sh /app/
 COPY restore.sh /app/
-COPY config.conf /app/config.conf.template
+COPY examples/config.example.conf /app/config.conf.template
 
 # 设置执行权限
 RUN chmod +x /app/*.sh
