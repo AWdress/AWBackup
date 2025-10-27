@@ -1,0 +1,59 @@
+# Git 相关
+.git
+.gitignore
+.gitattributes
+
+# 文档（不需要打包进镜像）
+*.md
+!README.md
+LICENSE
+
+# 日志文件
+logs/
+*.log
+
+# 备份文件
+*.tar.gz
+*.tar
+*.zip
+*.bak
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.temp
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE 文件
+.vscode/
+.idea/
+*.iml
+
+# 测试文件
+test_backups/
+test_data/
+
+# Docker 文件（不需要重复打包）
+docker-compose.yml
+.dockerignore
+
+# GitHub Actions
+.github/
+
+# 示例目录
+examples/
+
+# 配置文件（使用模板）
+config.conf
+
+# Docker 专用文档（已在镜像中）
+build.sh
+README.Docker.md
+
