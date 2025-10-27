@@ -5,7 +5,7 @@
 
 # 加载配置文件
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_FILE="${SCRIPT_DIR}/config.conf"
+CONFIG_FILE="${CONFIG_FILE:-${SCRIPT_DIR}/config.conf}"
 
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "错误: 配置文件 $CONFIG_FILE 不存在"

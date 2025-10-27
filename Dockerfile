@@ -63,25 +63,29 @@ RUN mkdir -p /app/logs \
 RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
     echo 'set -e' >> /app/entrypoint.sh && \
     echo '' >> /app/entrypoint.sh && \
-    echo '# 修复配置文件换行符（Windows CRLF -> Unix LF）' >> /app/entrypoint.sh && \
-    echo 'if [ -f /app/config.conf ]; then' >> /app/entrypoint.sh && \
-    echo '    echo "检查并修复配置文件格式..."' >> /app/entrypoint.sh && \
-    echo '    dos2unix /app/config.conf 2>/dev/null || sed -i "s/\r$//" /app/config.conf' >> /app/entrypoint.sh && \
-    echo 'fi' >> /app/entrypoint.sh && \
-    echo '' >> /app/entrypoint.sh && \
     echo '# 如果配置文件不存在，从模板创建' >> /app/entrypoint.sh && \
     echo 'if [ ! -f /app/config.conf ]; then' >> /app/entrypoint.sh && \
     echo '    echo "初始化配置文件..."' >> /app/entrypoint.sh && \
     echo '    cp /app/config.conf.template /app/config.conf' >> /app/entrypoint.sh && \
     echo 'fi' >> /app/entrypoint.sh && \
     echo '' >> /app/entrypoint.sh && \
+    echo '# 修复配置文件换行符（复制到临时文件处理）' >> /app/entrypoint.sh && \
+    echo 'if [ -f /app/config.conf ]; then' >> /app/entrypoint.sh && \
+    echo '    echo "检查并修复配置文件格式..."' >> /app/entrypoint.sh && \
+    echo '    cp /app/config.conf /tmp/config.conf.tmp' >> /app/entrypoint.sh && \
+    echo '    dos2unix /tmp/config.conf.tmp 2>/dev/null || sed -i "s/\r$//" /tmp/config.conf.tmp' >> /app/entrypoint.sh && \
+    echo '    export CONFIG_FILE=/tmp/config.conf.tmp' >> /app/entrypoint.sh && \
+    echo 'else' >> /app/entrypoint.sh && \
+    echo '    export CONFIG_FILE=/app/config.conf' >> /app/entrypoint.sh && \
+    echo 'fi' >> /app/entrypoint.sh && \
+    echo '' >> /app/entrypoint.sh && \
     echo '# 加载配置' >> /app/entrypoint.sh && \
-    echo 'source /app/config.conf' >> /app/entrypoint.sh && \
+    echo 'source "$CONFIG_FILE"' >> /app/entrypoint.sh && \
     echo '' >> /app/entrypoint.sh && \
     echo '# 启动 Telegram Bot 控制（如果启用）' >> /app/entrypoint.sh && \
     echo 'if [ "${ENABLE_TELEGRAM:-false}" = "true" ] && [ "${TELEGRAM_BOT_CONTROL:-false}" = "true" ]; then' >> /app/entrypoint.sh && \
     echo '    echo "启动 Telegram Bot 控制..."' >> /app/entrypoint.sh && \
-    echo '    /app/tg_bot.sh >> /app/logs/tg_bot.log 2>&1 &' >> /app/entrypoint.sh && \
+    echo '    CONFIG_FILE="$CONFIG_FILE" /app/tg_bot.sh >> /app/logs/tg_bot.log 2>&1 &' >> /app/entrypoint.sh && \
     echo '    TG_BOT_PID=$!' >> /app/entrypoint.sh && \
     echo '    echo "Telegram Bot PID: $TG_BOT_PID"' >> /app/entrypoint.sh && \
     echo 'fi' >> /app/entrypoint.sh && \
@@ -89,12 +93,12 @@ RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
     echo '# 检查 Cron 表达式' >> /app/entrypoint.sh && \
     echo 'if [ -n "$CRON_SCHEDULE" ]; then' >> /app/entrypoint.sh && \
     echo '    echo "设置定时任务: $CRON_SCHEDULE"' >> /app/entrypoint.sh && \
-    echo '    echo "$CRON_SCHEDULE /app/backup.sh >> /app/logs/cron.log 2>&1" > /etc/crontabs/root' >> /app/entrypoint.sh && \
+    echo '    echo "$CRON_SCHEDULE CONFIG_FILE=$CONFIG_FILE /app/backup.sh >> /app/logs/cron.log 2>&1" > /etc/crontabs/root' >> /app/entrypoint.sh && \
     echo '    echo "启动 Cron 服务..."' >> /app/entrypoint.sh && \
     echo '    crond -f -l 2' >> /app/entrypoint.sh && \
     echo 'else' >> /app/entrypoint.sh && \
     echo '    echo "未设置定时任务，执行单次备份..."' >> /app/entrypoint.sh && \
-    echo '    /app/backup.sh' >> /app/entrypoint.sh && \
+    echo '    CONFIG_FILE="$CONFIG_FILE" /app/backup.sh' >> /app/entrypoint.sh && \
     echo 'fi' >> /app/entrypoint.sh && \
     chmod +x /app/entrypoint.sh
 

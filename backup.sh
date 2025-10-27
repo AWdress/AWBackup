@@ -16,7 +16,7 @@ set -u  # 使用未定义变量时报错
 
 # 获取脚本所在目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_FILE="${SCRIPT_DIR}/config.conf"
+CONFIG_FILE="${CONFIG_FILE:-${SCRIPT_DIR}/config.conf}"
 
 # 颜色定义（用于终端输出）
 RED='\033[0;31m'
