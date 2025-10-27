@@ -29,10 +29,27 @@ WORKDIR /app
 COPY backup.sh /app/
 COPY cleanup.sh /app/
 COPY restore.sh /app/
-COPY examples/config.example.conf /app/config.conf.template
 
 # 设置执行权限
 RUN chmod +x /app/*.sh
+
+# 创建配置模板
+RUN cat > /app/config.conf.template << 'EOF'
+# AWBackup 配置文件
+BACKUP_TASKS="mydata"
+LOG_DIR="/app/logs"
+LOG_RETENTION_DAYS=30
+ENABLE_NOTIFICATION=false
+ENABLE_TELEGRAM=false
+
+# 示例备份任务
+MYDATA_NAME="我的数据"
+MYDATA_SOURCE="/data/mydata"
+MYDATA_DESTINATION="/backups"
+MYDATA_RETENTION_DAYS=7
+MYDATA_COMPRESS_LEVEL=6
+MYDATA_ENABLED=true
+EOF
 
 # 创建必要的目录
 RUN mkdir -p /app/logs \
