@@ -11,6 +11,7 @@
 - 📝 详细日志记录
 - ✅ 备份完整性验证
 - 📧 Telegram 机器人通知
+- 🎛️ Telegram 菜单控制（立即备份、查看状态等）
 - 🐳 Docker 容器化支持
 
 ## 🚀 快速开始
@@ -67,7 +68,9 @@ PHOTOS_COMPRESS_LEVEL=3
 PHOTOS_ENABLED=true
 ```
 
-## 📱 Telegram 通知（可选）
+## 📱 Telegram 通知与控制（可选）
+
+### 基础配置
 
 ```bash
 # 1. 在 Telegram 找 @BotFather，创建 Bot
@@ -76,7 +79,24 @@ PHOTOS_ENABLED=true
 ENABLE_TELEGRAM=true
 TELEGRAM_BOT_TOKEN="your_bot_token"
 TELEGRAM_CHAT_ID="your_chat_id"
+
+# 启用 Bot 菜单控制（推荐）
+TELEGRAM_BOT_CONTROL=true
 ```
+
+### Bot 控制命令
+
+启用 `TELEGRAM_BOT_CONTROL` 后，可在 Telegram 中使用：
+
+| 命令 | 功能 |
+|------|------|
+| `/menu` | 显示控制菜单 |
+| `/backup` | 立即执行备份 |
+| `/status` | 查看备份状态 |
+| `/logs` | 查看今日日志 |
+| `/list` | 列出备份文件 |
+| `/info` | 系统信息 |
+| `/help` | 帮助信息 |
 
 ## 🐳 Docker 配置
 

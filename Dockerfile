@@ -17,6 +17,7 @@ RUN apk add --no-cache \
     curl \
     ca-certificates \
     tzdata \
+    jq \
     && rm -rf /var/cache/apk/*
 
 # 设置时区
@@ -29,6 +30,7 @@ WORKDIR /app
 COPY backup.sh /app/
 COPY cleanup.sh /app/
 COPY restore.sh /app/
+COPY tg_bot.sh /app/
 
 # 设置执行权限
 RUN chmod +x /app/*.sh
@@ -64,6 +66,17 @@ RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
     echo 'if [ ! -f /app/config.conf ]; then' >> /app/entrypoint.sh && \
     echo '    echo "初始化配置文件..."' >> /app/entrypoint.sh && \
     echo '    cp /app/config.conf.template /app/config.conf' >> /app/entrypoint.sh && \
+    echo 'fi' >> /app/entrypoint.sh && \
+    echo '' >> /app/entrypoint.sh && \
+    echo '# 加载配置' >> /app/entrypoint.sh && \
+    echo 'source /app/config.conf' >> /app/entrypoint.sh && \
+    echo '' >> /app/entrypoint.sh && \
+    echo '# 启动 Telegram Bot 控制（如果启用）' >> /app/entrypoint.sh && \
+    echo 'if [ "${ENABLE_TELEGRAM:-false}" = "true" ] && [ "${TELEGRAM_BOT_CONTROL:-false}" = "true" ]; then' >> /app/entrypoint.sh && \
+    echo '    echo "启动 Telegram Bot 控制..."' >> /app/entrypoint.sh && \
+    echo '    /app/tg_bot.sh >> /app/logs/tg_bot.log 2>&1 &' >> /app/entrypoint.sh && \
+    echo '    TG_BOT_PID=$!' >> /app/entrypoint.sh && \
+    echo '    echo "Telegram Bot PID: $TG_BOT_PID"' >> /app/entrypoint.sh && \
     echo 'fi' >> /app/entrypoint.sh && \
     echo '' >> /app/entrypoint.sh && \
     echo '# 检查 Cron 表达式' >> /app/entrypoint.sh && \
