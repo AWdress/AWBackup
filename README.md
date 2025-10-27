@@ -31,6 +31,8 @@ nano config.conf
 docker-compose up -d
 ```
 
+> **💡 提示：** Windows 用户编辑 config.conf 后，容器会自动转换文件格式，无需手动处理换行符问题。
+
 ### 直接安装（Unraid/Linux）
 
 ```bash

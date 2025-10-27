@@ -18,6 +18,7 @@ RUN apk add --no-cache \
     ca-certificates \
     tzdata \
     jq \
+    dos2unix \
     && rm -rf /var/cache/apk/*
 
 # 设置时区
@@ -61,6 +62,12 @@ RUN mkdir -p /app/logs \
 # 创建启动脚本
 RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
     echo 'set -e' >> /app/entrypoint.sh && \
+    echo '' >> /app/entrypoint.sh && \
+    echo '# 修复配置文件换行符（Windows CRLF -> Unix LF）' >> /app/entrypoint.sh && \
+    echo 'if [ -f /app/config.conf ]; then' >> /app/entrypoint.sh && \
+    echo '    echo "检查并修复配置文件格式..."' >> /app/entrypoint.sh && \
+    echo '    dos2unix /app/config.conf 2>/dev/null || sed -i "s/\r$//" /app/config.conf' >> /app/entrypoint.sh && \
+    echo 'fi' >> /app/entrypoint.sh && \
     echo '' >> /app/entrypoint.sh && \
     echo '# 如果配置文件不存在，从模板创建' >> /app/entrypoint.sh && \
     echo 'if [ ! -f /app/config.conf ]; then' >> /app/entrypoint.sh && \
