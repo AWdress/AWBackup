@@ -8,7 +8,7 @@ services:
   # 基础配置示例
   # ========================================
   awbackup:
-    image: awbackup:latest
+    image: awdress/awbackup:latest
     container_name: awbackup
     build:
       context: .
@@ -71,7 +71,7 @@ services:
 # 取消注释下面的配置以启用
 #
 #  awbackup-daily:
-#    image: awbackup:latest
+#    image: awdress/awbackup:latest
 #    container_name: awbackup-daily
 #    environment:
 #      - CRON_SCHEDULE=0 2 * * *
@@ -84,7 +84,7 @@ services:
 #    restart: unless-stopped
 #
 #  awbackup-weekly:
-#    image: awbackup:latest
+#    image: awdress/awbackup:latest
 #    container_name: awbackup-weekly
 #    environment:
 #      - CRON_SCHEDULE=0 3 * * 0

@@ -86,7 +86,7 @@ TELEGRAM_CHAT_ID="your_chat_id"
 version: '3.8'
 services:
   awbackup:
-    image: awbackup:latest
+    image: awdress/awbackup:latest
     container_name: AWBackup
     environment:
       - CRON_SCHEDULE=0 2 * * *  # 每天凌晨2点
