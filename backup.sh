@@ -493,21 +493,26 @@ backup_task() {
 # ============================================
 
 main() {
-    log INFO "============================================"
-    log INFO "AWBackup v1.0.0"
-    log INFO "开始时间: $(date '+%Y-%m-%d %H:%M:%S')"
-    log INFO "============================================"
+    # 先输出到标准输出（此时 LOG_DIR 还未定义）
+    echo "[INFO] ============================================"
+    echo "[INFO] AWBackup v1.0.0"
+    echo "[INFO] 开始时间: $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "[INFO] ============================================"
     
     # 检查配置文件
     if [[ ! -f "${CONFIG_FILE}" ]]; then
-        log ERROR "配置文件不存在: ${CONFIG_FILE}"
-        log ERROR "请从示例配置创建: cp examples/config.example.conf config.conf"
+        echo "[ERROR] 配置文件不存在: ${CONFIG_FILE}"
+        echo "[ERROR] 请从示例配置创建: cp examples/config.example.conf config.conf"
         exit 1
     fi
     
     # 加载配置文件
-    log INFO "加载配置文件: ${CONFIG_FILE}"
+    echo "[INFO] 加载配置文件: ${CONFIG_FILE}"
     source "${CONFIG_FILE}"
+    
+    # 配置加载后，开始使用 log() 函数
+    log INFO "配置文件加载成功"
+    log INFO "备份任务: ${BACKUP_TASKS}"
     
     # 发送开始通知
     if [[ "${TELEGRAM_NOTIFY_ON_START:-false}" == "true" ]]; then
