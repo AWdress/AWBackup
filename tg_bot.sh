@@ -106,16 +106,25 @@ handle_command() {
             # 在后台执行备份
             (
                 if [[ -x "$BACKUP_SCRIPT" ]]; then
-                    output=$("$BACKUP_SCRIPT" 2>&1)
+                    # 导出 CONFIG_FILE 环境变量
+                    export CONFIG_FILE="${CONFIG_FILE}"
+                    
+                    # 执行备份脚本并捕获输出
+                    output=$(CONFIG_FILE="${CONFIG_FILE}" "$BACKUP_SCRIPT" 2>&1)
                     result=$?
                     
                     if [[ $result -eq 0 ]]; then
                         send_message "$chat_id" "✅ 备份任务执行完成！\n\n详细结果请查看通知消息。"
                     else
-                        send_message "$chat_id" "❌ 备份任务执行失败！\n\n错误信息:\n\`\`\`\n${output: -500}\n\`\`\`"
+                        # 获取最后 500 个字符的错误信息
+                        error_msg="${output: -500}"
+                        if [[ -z "$error_msg" ]]; then
+                            error_msg="未捕获到错误信息，请查看容器日志: docker logs AWBackup"
+                        fi
+                        send_message "$chat_id" "❌ 备份任务执行失败！\n\n错误信息:\n\`\`\`\n${error_msg}\n\`\`\`"
                     fi
                 else
-                    send_message "$chat_id" "❌ 备份脚本不存在或无执行权限"
+                    send_message "$chat_id" "❌ 备份脚本不存在或无执行权限\n\n路径: $BACKUP_SCRIPT"
                 fi
             ) &
             ;;
