@@ -525,9 +525,23 @@ main() {
     fi
     
     # 检查必需命令
-    check_command tar || exit 1
-    check_command du || exit 1
-    check_command df || exit 1
+    echo "[INFO] 检查必需命令..."
+    if ! command -v tar &> /dev/null; then
+        echo "[ERROR] tar 命令未找到" >&2
+        log ERROR "tar 命令未找到"
+        exit 1
+    fi
+    if ! command -v du &> /dev/null; then
+        echo "[ERROR] du 命令未找到" >&2
+        log ERROR "du 命令未找到"
+        exit 1
+    fi
+    if ! command -v df &> /dev/null; then
+        echo "[ERROR] df 命令未找到" >&2
+        log ERROR "df 命令未找到"
+        exit 1
+    fi
+    echo "[INFO] 必需命令检查通过"
     
     # 创建必要的目录
     mkdir -p "${LOG_DIR:-${SCRIPT_DIR}/logs}"
